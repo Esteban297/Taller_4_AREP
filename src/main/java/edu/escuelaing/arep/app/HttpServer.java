@@ -7,9 +7,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-/**
- * Clase main que levanta el servidor y carga la pagina
- */
+
 public class HttpServer {
     private static HttpServer instance = new HttpServer();
     private Map<String, RestService> services = new HashMap<>();
@@ -76,10 +74,8 @@ public class HttpServer {
     }
 
     /**
-     * Crea una tabla en formato HTML
-     *
-     * @param apiAnswer recibe el String que tiene formato de JSON de la respuesta de la pelicula
-     * @return String con sintaxis HTML para generar una tabla con el JSON que entra
+     * @param apiAnswer toda la información de la pelicula la cual va a ser mostrada en una tabla
+     * @return
      */
     private static String createTable(String apiAnswer) {
         String[] apiDatini = apiAnswer.split(":");
