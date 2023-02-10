@@ -1,4 +1,4 @@
-package main.java.edu.escuelaing.arep.app;
+package edu.escuelaing.arep.app;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;

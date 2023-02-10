@@ -1,0 +1,9 @@
+edu\escuelaing\arep\app\webapp\FirstApp.class
+edu\escuelaing\arep\app\services\HtmlRestService.class
+edu\escuelaing\arep\app\services\JpgRestService.class
+edu\escuelaing\arep\app\HttpServer.class
+edu\escuelaing\arep\app\services\RestService.class
+edu\escuelaing\arep\app\Cache.class
+edu\escuelaing\arep\app\HttpConnectionExample.class
+edu\escuelaing\arep\app\services\JsRestService.class
+edu\escuelaing\arep\app\services\CssRestService.class

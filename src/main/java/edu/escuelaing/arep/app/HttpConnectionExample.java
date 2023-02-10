@@ -1,11 +1,12 @@
-package main.java.edu.escuelaing.arep.app;
+package edu.escuelaing.arep.app;
 
-import javax.imageio.plugins.tiff.GeoTIFFTagSet;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 
 public class HttpConnectionExample {
 
@@ -54,4 +55,3 @@ public class HttpConnectionExample {
 
 
 }
-
