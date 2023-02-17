@@ -2,6 +2,8 @@ package edu.escuelaing.arep.app;
 
 
 import edu.escuelaing.arep.app.services.RestService;
+import edu.escuelaing.arep.app.sparkService.sparkAns;
+import edu.escuelaing.arep.app.sparkService.sparkService;
 
 import java.net.*;
 import java.io.*;
@@ -10,6 +12,8 @@ import java.util.*;
 
 public class HttpServer {
     private static HttpServer instance = new HttpServer();
+
+    private sparkAns ans;
     private Map<String, RestService> services = new HashMap<>();
 
     private HttpServer() {
@@ -40,10 +44,11 @@ public class HttpServer {
             }
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine, outputLine;
+            String inputLine, outputLine = null;
             String title = "";
             boolean firs_line = true;
             String request = "/simple";
+            String verb = "";
             while ((inputLine = in.readLine()) != null) {
                 System.out.println("Received: " + inputLine);
                 if (firs_line) {
@@ -58,8 +63,20 @@ public class HttpServer {
                     break;
                 }
             }
-            if (request.startsWith("/apps/")) {
-                outputLine = executeService(request.substring(5));
+            if (Objects.equals(verb, "GET")) {
+                if (sparkService.cache.containsKey(request)) {
+                    outputLine = sparkService.cache.get(request).getResponse();
+                } else if (!sparkService.cache.containsKey(request) && !request.contains("favicon")) {
+                    outputLine = sparkService.setCache(request);
+                }
+            }else if (Objects.equals(verb, "POST")) {
+                if(!request.contains("favicon")){
+                    String value = request.split("=")[1];
+                    String key = request.split("=")[0];
+                    key = key.split("\\?")[1];
+                    outputLine = sparkService.post(value,key);
+
+                }
             } else if (!Objects.equals(title, "")) {
                 outputLine = APIanswer(title);
             } else {

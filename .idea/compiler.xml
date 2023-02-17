@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Taller_1_AREP" target="1.7" />
+      <module name="Taller_1_AREP" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,6 +1,7 @@
-# AREP Laboratorio 2
+# AREP Laboratorio 3
 
 Creación de servidor web que tiene la capacidad de leer y mostrar archivos tipos jpg, js, html y css, que se encuentren en el disco local
+Adicionalmente simula el motor spark para realizar peticiones de tipo get y post
 
 ## Iniciando
 
@@ -27,29 +28,6 @@ mvn clean package exec:java -D "exec.mainClass"="edu.escuelaing.arep.app.webapp.
 Finalmente ingrese al navegador de su preferencia y usamos el siguiente link :
 http://localhost:35000
 
-#Para mostrar los diferentes archivos
-Utilizamos las siguientes rutas
-* Archivo html
-```
-http://localhost:35000/apps/index
-```
-
-* Archivo css
-```
-http://localhost:35000/apps/style
-```
-
-* Archivo jpg
-
-```
-http://localhost:35000/apps/imagen
-```
-
-* Archivo js
-
-```
-http://localhost:35000/apps/app
-```
 
 ## Documentación
 
@@ -69,6 +47,6 @@ mvn javadoc:javadoc
 
 Versión 1.0
 
-## Autores
+## Autor
 
 * Hayden Esteban Cristancho Pinzon
