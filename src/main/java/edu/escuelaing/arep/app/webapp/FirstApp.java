@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class FirstApp {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         HttpServer server_0 = HttpServer.getInstance();
         sparkService.get("", (req, ans) -> {
             ans.setType("application/json");

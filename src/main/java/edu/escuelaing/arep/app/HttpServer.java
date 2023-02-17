@@ -5,6 +5,7 @@ import edu.escuelaing.arep.app.services.RestService;
 import edu.escuelaing.arep.app.sparkService.sparkAns;
 import edu.escuelaing.arep.app.sparkService.sparkService;
 
+import java.lang.reflect.Method;
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -13,8 +14,7 @@ import java.util.*;
 public class HttpServer {
     private static HttpServer instance = new HttpServer();
 
-    private sparkAns ans;
-    private Map<String, RestService> services = new HashMap<>();
+    private Map<String, Method> services = new HashMap<>();
 
     private HttpServer() {
     }
@@ -23,7 +23,20 @@ public class HttpServer {
         return instance;
     }
 
-    public void run(String[] args) throws IOException {
+    public void run(String[] args) throws IOException, ClassNotFoundException {
+        String className = args[0];
+        Class c = Class.forName(className);
+        Method[] methods = c.getMethods();
+        for(Method m  : methods){
+            if(m.isAnnotationPresent(RequestMapping.class)){
+                try {
+                    String URL = m.getAnnotation(RequestMapping.class).value();
+                    services.put(URL,m);
+                } catch (Throwable x){
+                    x.printStackTrace();
+                }
+            }
+        }
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(35000);
@@ -154,18 +167,6 @@ public class HttpServer {
                 "</style>" +
                 createTable(Cache.findTitle(title));
     }
-
-    public void addServices(String key, RestService service){
-        services.put(key,service);
-    }
-
-    private String executeService(String serviceName) {
-        RestService rs = services.get(serviceName);
-        String header = rs.getHeader();
-        String body = rs.getResponse();
-        return header + body;
-    }
-
 
 
 }
