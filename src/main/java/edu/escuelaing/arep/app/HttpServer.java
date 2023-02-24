@@ -1,10 +1,9 @@
 package edu.escuelaing.arep.app;
 
+import edu.escuelaing.arep.app.spring.components.RequestMapping;
+import edu.escuelaing.arep.app.spring.springApplication;
 
-import edu.escuelaing.arep.app.services.RestService;
-import edu.escuelaing.arep.app.sparkService.sparkAns;
-import edu.escuelaing.arep.app.sparkService.sparkService;
-
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.*;
 import java.io.*;
@@ -13,7 +12,7 @@ import java.util.*;
 
 public class HttpServer {
     private static HttpServer instance = new HttpServer();
-
+    private OutputStream outputStream = null;
     private Map<String, Method> services = new HashMap<>();
 
     private HttpServer() {
@@ -23,25 +22,30 @@ public class HttpServer {
         return instance;
     }
 
-    public void run(String[] args) throws IOException, ClassNotFoundException {
-        String className = args[0];
-        Class c = Class.forName(className);
-        Method[] methods = c.getMethods();
-        for(Method m  : methods){
-            if(m.isAnnotationPresent(RequestMapping.class)){
-                try {
-                    String URL = m.getAnnotation(RequestMapping.class).value();
-                    services.put(URL,m);
-                } catch (Throwable x){
-                    x.printStackTrace();
+    public void run(String[] args) throws IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException {
+        springApplication spring = new springApplication();
+        ArrayList<String> classes = spring.getClassComponent(new ArrayList<>(), ".");
+        for (String className: classes) {
+            Class c = Class.forName(className);
+            Method[] methods = c.getMethods();
+            for (Method m  : methods){
+                if(m.isAnnotationPresent(RequestMapping.class)){
+                    try {
+                        String URL = m.getAnnotation(RequestMapping.class).value();
+                        services.put(URL,m);
+                    } catch (Throwable x){
+                        x.printStackTrace();
+                    }
                 }
             }
         }
+        System.out.println("Methods: " + services);
+
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(35000);
         } catch (IOException e) {
-            System.err.println("Could not listen on port: 34000.");
+            System.err.println("Could not listen on port: 35000.");
             System.exit(1);
         }
 
@@ -59,42 +63,39 @@ public class HttpServer {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             String inputLine, outputLine = null;
             String title = "";
-            boolean firs_line = true;
+            boolean first_line = true;
+            outputStream = clientSocket.getOutputStream();
             String request = "/simple";
             String verb = "";
             while ((inputLine = in.readLine()) != null) {
-                System.out.println("Received: " + inputLine);
-                if (firs_line) {
+                if (first_line) {
                     request = inputLine.split(" ")[1];
-                    firs_line = false;
-                }
-                if (inputLine.contains("title?name")) {
-                    String[] firstSplit = inputLine.split("=");
-                    title = (firstSplit[1].split("HTTP"))[0];
+                    first_line = false;
+                    verb = inputLine.split(" ")[0];
                 }
                 if (!in.ready()) {
                     break;
                 }
             }
             if (Objects.equals(verb, "GET")) {
-                if (sparkService.cache.containsKey(request)) {
-                    outputLine = sparkService.cache.get(request).getResponse();
-                } else if (!sparkService.cache.containsKey(request) && !request.contains("favicon")) {
-                    outputLine = sparkService.setCache(request);
+                if(services.containsKey(request)) {
+                    outputLine = services.get(request).invoke(null).toString();
                 }
-            }else if (Objects.equals(verb, "POST")) {
-                if(!request.contains("favicon")){
-                    String value = request.split("=")[1];
-                    String key = request.split("=")[0];
-                    key = key.split("\\?")[1];
-                    outputLine = sparkService.post(value,key);
-
-                }
-            } else if (!Objects.equals(title, "")) {
-                outputLine = APIanswer(title);
-            } else {
-                outputLine = htmlOriginal();
-            }
+            }else {
+            outputLine = "HTTP/1.1 200 OK\r\n" +
+                    "Content-type: text/html\r\n" +
+                    "\r\n" +
+                    "<!DOCTYPE html>"
+                    + "<html>"
+                    + "<head>"
+                    + "<meta charset=\"UTF-8\">"
+                    + "<title>404</title>\n"
+                    + "</head>"
+                    + "<body>"
+                    + "Use metodos GET"
+                    + "</body>"
+                    + "</html>";
+        }
             out.println(outputLine);
             out.close();
             in.close();
@@ -103,22 +104,7 @@ public class HttpServer {
         serverSocket.close();
     }
 
-    /**
-     * @param apiAnswer toda la información de la pelicula la cual va a ser mostrada en una tabla
-     * @return
-     */
-    private static String createTable(String apiAnswer) {
-        String[] apiDatini = apiAnswer.split(":");
-        String tabla = "<table> \n";
-        for (int i = 0; i < (apiDatini.length); i++) {
-            String[] temporalAnswer = apiDatini[i].split(",");
-            tabla += "<td>" + Arrays.toString(Arrays.copyOf(temporalAnswer, temporalAnswer.length - 1)).replace("[", "").replace("]", "").replace("}", "") + "</td>\n</tr>\n";
-            tabla += "<tr>\n<td>" + temporalAnswer[temporalAnswer.length - 1].replace("{", "").replace("[", "") + "</td>\n";
-        }
-        tabla += "</table>";
-        return tabla;
 
-    }
 
     private static String htmlOriginal() {
         return "HTTP/1.1 200 OK\r\n"
@@ -156,17 +142,8 @@ public class HttpServer {
                 "</html>";
     }
 
-    private static String APIanswer(String title) throws IOException {
-        return "HTTP/1.1 200 OK\r\n"
-                + "Content-Type: application/json\r\n"
-                + "\r\n" +
-                "<style>\n" +
-                "table, th, td {\n" +
-                "  border:1px solid black;\n" +
-                "}\n" +
-                "</style>" +
-                createTable(Cache.findTitle(title));
+
+    public OutputStream getOutputStream() {
+        return outputStream;
     }
-
-
 }

@@ -1,7 +1,6 @@
-# AREP Laboratorio 3
+# AREP Laboratorio 4
 
-Creación de servidor web que tiene la capacidad de leer y mostrar archivos tipos jpg, js, html y css, que se encuentren en el disco local
-Adicionalmente simula el motor spark para realizar peticiones de tipo get y post
+TALLER DE ARQUITECTURAS DE SERVIDORES DE APLICACIONES, META PROTOCOLOS DE OBJETOS, PATRÓN IOC, REFLEXIÓN
 
 ## Iniciando
 
@@ -16,7 +15,7 @@ Adicionalmente simula el motor spark para realizar peticiones de tipo get y post
 Descargamos el archivo .zip o lo clonamos con el comando:
 
 ```
-git clone https://github.com/Esteban297/Taller_2_AREP.git
+git clone https://github.com/Esteban297/Taller_4_AREP.git
 ```
 
 Una vez descargado el repositorio nos dirigimos al directorio raiz del proyecto y ejecutamos el comando:
@@ -27,6 +26,30 @@ mvn clean package exec:java -D "exec.mainClass"="edu.escuelaing.arep.app.webapp.
 
 Finalmente ingrese al navegador de su preferencia y usamos el siguiente link :
 http://localhost:35000
+
+#Para mostrar los diferentes archivos
+Utilizamos las siguientes rutas
+* Archivo html
+```
+http://localhost:35000/index
+```
+
+* Archivo css
+```
+http://localhost:35000/style
+```
+
+* Archivo jpg
+
+```
+http://localhost:35000/imagen
+```
+
+* Archivo js
+
+```
+http://localhost:35000/app
+```
 
 
 ## Documentación
